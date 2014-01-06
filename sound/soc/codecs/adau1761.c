@@ -848,7 +848,10 @@ static int adau1761_bus_probe(struct device *dev,
 
 static const struct regmap_config adau1761_spi_regmap_config = {
 	.val_bits		= 8,
-	.reg_bits		= 24,
+	//.reg_bits		= 8,
+	.reg_bits		= 16,
+	//.reg_bits		= 24,
+	//.reg_bits		= 32,
 	.read_flag_mask		= 0x01,
 	.max_register		= 0x40fa,
 	.reg_defaults		= adau1761_reg_defaults,
