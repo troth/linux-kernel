@@ -21,6 +21,10 @@
  *   o Add more codecs and platforms to ensure good API coverage.
  *   o Support TDM on PCM and I2S
  */
+#if 1
+#  define DEBUG
+#  define VERBOSE_DEBUG
+#endif
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -4131,6 +4135,7 @@ EXPORT_SYMBOL_GPL(snd_soc_unregister_codec);
 int snd_soc_of_parse_card_name(struct snd_soc_card *card,
 			       const char *propname)
 {
+pr_debug("TROTH: %s():\n", __func__);
 	struct device_node *np = card->dev->of_node;
 	int ret;
 

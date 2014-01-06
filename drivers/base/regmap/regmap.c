@@ -10,6 +10,11 @@
  * published by the Free Software Foundation.
  */
 
+#if 1
+#  define DEBUG
+#  define VERBOSE_DEBUG
+#endif
+
 #include <linux/device.h>
 #include <linux/slab.h>
 #include <linux/export.h>
@@ -372,6 +377,7 @@ struct regmap *regmap_init(struct device *dev,
 	enum regmap_endian reg_endian, val_endian;
 	int i, j;
 
+pr_debug("TROTH: %s: bus=%p; config=%p\n", __func__, bus, config);
 	if (!bus || !config)
 		goto err;
 
@@ -441,6 +447,9 @@ struct regmap *regmap_init(struct device *dev,
 		val_endian = bus->val_format_endian_default;
 	if (val_endian == REGMAP_ENDIAN_DEFAULT)
 		val_endian = REGMAP_ENDIAN_BIG;
+
+pr_debug("TROTH: %s: reg_bits=%d; reg_shift=%d\n",
+         __func__, config->reg_bits, map->reg_shift);
 
 	switch (config->reg_bits + map->reg_shift) {
 	case 2:
@@ -517,6 +526,8 @@ struct regmap *regmap_init(struct device *dev,
 		goto err_map;
 	}
 
+pr_debug("TROTH: %s: val_bits=%d\n", __func__, config->val_bits);
+
 	switch (config->val_bits) {
 	case 8:
 		map->format.format_val = regmap_format_8;
@@ -558,6 +569,7 @@ struct regmap *regmap_init(struct device *dev,
 		break;
 	}
 
+pr_debug("TROTH: %s(): 1\n", __func__);
 	if (map->format.format_write) {
 		if ((reg_endian != REGMAP_ENDIAN_BIG) ||
 		    (val_endian != REGMAP_ENDIAN_BIG))
@@ -565,16 +577,19 @@ struct regmap *regmap_init(struct device *dev,
 		map->use_single_rw = true;
 	}
 
+pr_debug("TROTH: %s(): 2\n", __func__);
 	if (!map->format.format_write &&
 	    !(map->format.format_reg && map->format.format_val))
 		goto err_map;
 
+pr_debug("TROTH: %s(): 3\n", __func__);
 	map->work_buf = kzalloc(map->format.buf_size, GFP_KERNEL);
 	if (map->work_buf == NULL) {
 		ret = -ENOMEM;
 		goto err_map;
 	}
 
+pr_debug("TROTH: %s(): 4\n", __func__);
 	map->range_tree = RB_ROOT;
 	for (i = 0; i < config->num_ranges; i++) {
 		const struct regmap_range_cfg *range_cfg = &config->ranges[i];
@@ -662,12 +677,15 @@ struct regmap *regmap_init(struct device *dev,
 		}
 	}
 
+pr_debug("TROTH: %s(): 5\n", __func__);
 	regmap_debugfs_init(map, config->name);
 
+pr_debug("TROTH: %s(): 6\n", __func__);
 	ret = regcache_init(map, config);
 	if (ret != 0)
 		goto err_range;
 
+pr_debug("TROTH: %s(): 7\n", __func__);
 	/* Add a devres resource for dev_get_regmap() */
 	m = devres_alloc(dev_get_regmap_release, sizeof(*m), GFP_KERNEL);
 	if (!m) {
@@ -677,6 +695,7 @@ struct regmap *regmap_init(struct device *dev,
 	*m = map;
 	devres_add(dev, m);
 
+pr_debug("TROTH: %s(): exit\n", __func__);
 	return map;
 
 err_debugfs:
@@ -1047,6 +1066,8 @@ int _regmap_write(struct regmap *map, unsigned int reg,
 int regmap_write(struct regmap *map, unsigned int reg, unsigned int val)
 {
 	int ret;
+
+pr_debug("TROTH: %s: reg=0x%x, val=0x%x\n", __func__, reg, val);
 
 	if (reg % map->reg_stride)
 		return -EINVAL;

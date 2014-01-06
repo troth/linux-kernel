@@ -13,6 +13,11 @@
  *
  */
 
+#if 1
+#  define DEBUG
+#  define VERBOSE_DEBUG
+#endif
+
 #include <linux/module.h>
 #include <linux/timer.h>
 #include <linux/interrupt.h>
@@ -114,6 +119,8 @@ static int zed_adau1761_probe(struct platform_device *pdev)
 {
 	struct snd_soc_card *card = &zed_adau1761_card;
 	struct device_node *of_node = pdev->dev.of_node;
+
+pr_debug("TROTH: %s():\n", __func__);
 
 	if (!of_node)
 		return -ENXIO;

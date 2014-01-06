@@ -7,6 +7,11 @@
  * Licensed under the GPL-2 or later.
  */
 
+#if 1
+#  define DEBUG
+#  define VERBOSE_DEBUG
+#endif
+
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/i2c.h>
@@ -479,6 +484,7 @@ static const struct snd_soc_dapm_route adau1761_dapm_routes[] = {
 static int adau1761_set_bias_level(struct snd_soc_codec *codec,
 				 enum snd_soc_bias_level level)
 {
+pr_debug("TROTH: %s(): 1\n", __func__);
 	struct adau *adau = snd_soc_codec_get_drvdata(codec);
 
 	switch (level) {
@@ -504,6 +510,7 @@ static int adau1761_set_bias_level(struct snd_soc_codec *codec,
 static enum adau1761_output_mode adau1761_get_lineout_mode(
 	struct snd_soc_codec *codec)
 {
+pr_debug("TROTH: %s(): 1\n", __func__);
 	struct adau1761_platform_data *pdata = codec->dev->platform_data;
 
 	if (pdata)
@@ -514,6 +521,7 @@ static enum adau1761_output_mode adau1761_get_lineout_mode(
 
 static int adau1761_setup_digmic_jackdetect(struct snd_soc_codec *codec)
 {
+pr_debug("TROTH: %s(): 1\n", __func__);
 	struct adau1761_platform_data *pdata = codec->dev->platform_data;
 	struct adau *adau = snd_soc_codec_get_drvdata(codec);
 	enum adau1761_digmic_jackdet_pin_mode mode;
@@ -610,6 +618,7 @@ static int adau1761_setup_digmic_jackdetect(struct snd_soc_codec *codec)
 
 static int adau1761_setup_headphone_mode(struct snd_soc_codec *codec)
 {
+pr_debug("TROTH: %s(): 1\n", __func__);
 	struct adau *adau = snd_soc_codec_get_drvdata(codec);
 	struct adau1761_platform_data *pdata = codec->dev->platform_data;
 	enum adau1761_output_mode mode;
@@ -659,6 +668,7 @@ static int adau1761_setup_headphone_mode(struct snd_soc_codec *codec)
 
 static bool adau1761_readable_register(struct device *dev, unsigned int reg)
 {
+pr_debug("TROTH: %s(): 1\n", __func__);
 	switch (reg) {
 	case ADAU1761_DIGMIC_JACKDETECT:
 	case ADAU1761_REC_MIXER_LEFT0:
@@ -694,6 +704,7 @@ static bool adau1761_readable_register(struct device *dev, unsigned int reg)
 
 static int adau1761_probe(struct snd_soc_codec *codec)
 {
+pr_debug("TROTH: %s():\n", __func__);
 	struct adau1761_platform_data *pdata = codec->dev->platform_data;
 	struct adau *adau = snd_soc_codec_get_drvdata(codec);
 	int ret;
@@ -832,15 +843,23 @@ static int adau1761_bus_probe(struct device *dev,
 	struct snd_soc_dai_driver *dai_drv;
 	int ret;
 
+pr_debug("TROTH: %s(): 1\n", __func__);
 	ret = adau17x1_bus_probe(dev, regmap, type, control_type);
 	if (ret)
+    {
+pr_debug("TROTH: %s(): 2\n", __func__);
 		return ret;
+    }
 
 	if (type == ADAU1361)
 		dai_drv = &adau1361_dai_driver;
 	else
+    {
+pr_debug("TROTH: %s(): 3: 1761 dai driver\n", __func__);
 		dai_drv = &adau1761_dai_driver;
+    }
 
+pr_debug("TROTH: %s(): 10\n", __func__);
 	return snd_soc_register_codec(dev, &adau1761_codec_driver, dai_drv, 1);
 }
 
@@ -863,6 +882,7 @@ static const struct regmap_config adau1761_spi_regmap_config = {
 
 static int adau1761_spi_probe(struct spi_device *spi)
 {
+pr_debug("TROTH: %s():\n", __func__);
 	enum adau17x1_type type = spi_get_device_id(spi)->driver_data;
 	struct regmap *regmap;
 
@@ -898,11 +918,13 @@ static struct spi_driver adau1761_spi_driver = {
 
 static int __init adau1761_spi_register_driver(void)
 {
+pr_debug("TROTH: %s():\n", __func__);
 	return spi_register_driver(&adau1761_spi_driver);
 }
 
 static void adau1761_spi_unregister_driver(void)
 {
+pr_debug("TROTH: %s():\n", __func__);
 	spi_unregister_driver(&adau1761_spi_driver);
 }
 
@@ -930,6 +952,7 @@ static int adau1761_i2c_probe(struct i2c_client *client,
 	enum adau17x1_type type = id->driver_data;
 	struct regmap *regmap;
 
+pr_debug("TROTH: %s():\n", __func__);
 	regmap = devm_regmap_init_i2c(client, &adau1761_i2c_regmap_config);
 
 	return adau1761_bus_probe(&client->dev, regmap, type, SND_SOC_I2C);
@@ -962,11 +985,13 @@ static struct i2c_driver adau1761_i2c_driver = {
 
 static int __init adau1761_i2c_register_driver(void)
 {
+pr_debug("TROTH: %s():\n", __func__);
 	return i2c_add_driver(&adau1761_i2c_driver);
 }
 
 static void __exit adau1761_i2c_unregister_driver(void)
 {
+pr_debug("TROTH: %s():\n", __func__);
 	i2c_del_driver(&adau1761_i2c_driver);
 }
 
@@ -981,11 +1006,19 @@ static int __init adau1761_init(void)
 
 	ret = adau1761_spi_register_driver();
 	if (ret)
+    {
+pr_debug("TROTH: %s(): FAILED: registered spi driver\n", __func__);
 		return ret;
+    }
 
 	ret = adau1761_i2c_register_driver();
 	if (ret)
+    {
+pr_debug("TROTH: %s(): FAILED register i2c driver\n", __func__);
 		adau1761_spi_unregister_driver();
+    }
+
+pr_debug("TROTH: %s(): registered i2c driver\n", __func__);
 
 	return ret;
 }

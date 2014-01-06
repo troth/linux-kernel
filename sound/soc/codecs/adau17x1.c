@@ -7,6 +7,11 @@
  * Licensed under the GPL-2 or later.
  */
 
+#if 1
+#  define DEBUG
+#  define VERBOSE_DEBUG
+#endif
+
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/delay.h>
@@ -73,6 +78,7 @@ static const struct snd_kcontrol_new adau17x1_controls[] = {
 static int adau17x1_pll_event(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event)
 {
+pr_debug("TROTH: %s(): 1\n", __func__);
 	struct adau *adau = snd_soc_codec_get_drvdata(w->codec);
 	int ret;
 
@@ -154,6 +160,7 @@ static const char * const adau17x1_dac_mux_text[] = {
 int adau17x1_dsp_mux_enum_put(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
+pr_debug("TROTH: %s(): 1\n", __func__);
 	struct snd_soc_dapm_widget_list *wlist = snd_kcontrol_chip(kcontrol);
 	struct snd_soc_dapm_widget *w = wlist->widgets[0];
 	struct adau *adau = snd_soc_codec_get_drvdata(w->codec);
@@ -205,6 +212,7 @@ EXPORT_SYMBOL_GPL(adau17x1_dsp_mux_enum_put);
 int adau17x1_dsp_mux_enum_get(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
+pr_debug("TROTH: %s(): 1\n", __func__);
 	struct snd_soc_dapm_widget_list *wlist = snd_kcontrol_chip(kcontrol);
 	struct snd_soc_dapm_widget *widget = wlist->widgets[0];
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
@@ -254,6 +262,7 @@ static const struct snd_soc_dapm_route adau17x1_no_dsp_dapm_routes[] = {
 
 static void adau17x1_check_aifclk(struct snd_soc_codec *codec)
 {
+pr_debug("TROTH: %s(): 1\n", __func__);
 	struct adau *adau = snd_soc_codec_get_drvdata(codec);
 
 	/* If we are in master mode we need to generate bit- and frameclock,
@@ -267,6 +276,7 @@ static void adau17x1_check_aifclk(struct snd_soc_codec *codec)
 
 bool adau17x1_has_dsp(struct adau *adau)
 {
+pr_debug("TROTH: %s(): 1\n", __func__);
 	switch (adau->type) {
 	case ADAU1761:
 	case ADAU1381:
@@ -281,6 +291,7 @@ EXPORT_SYMBOL_GPL(adau17x1_has_dsp);
 static int adau17x1_hw_params(struct snd_pcm_substream *substream,
 	struct snd_pcm_hw_params *params, struct snd_soc_dai *dai)
 {
+pr_debug("TROTH: %s(): 1\n", __func__);
 	struct snd_soc_codec *codec = dai->codec;
 	struct adau *adau = snd_soc_codec_get_drvdata(codec);
 	unsigned int val, div, dsp_div;
@@ -359,6 +370,7 @@ static int adau17x1_hw_params(struct snd_pcm_substream *substream,
 static int adau17x1_dai_startup(struct snd_pcm_substream *substream,
 	struct snd_soc_dai *dai)
 {
+pr_debug("TROTH: %s(): 1\n", __func__);
 	adau17x1_check_aifclk(dai->codec);
 
 	return 0;
@@ -367,12 +379,14 @@ static int adau17x1_dai_startup(struct snd_pcm_substream *substream,
 static void adau17x1_dai_shutdown(struct snd_pcm_substream *substream,
 	struct snd_soc_dai *dai)
 {
+pr_debug("TROTH: %s(): 1\n", __func__);
 	adau17x1_check_aifclk(dai->codec);
 }
 
 static int adau17x1_set_dai_pll(struct snd_soc_dai *dai, int pll_id,
 	int source, unsigned int freq_in, unsigned int freq_out)
 {
+pr_debug("TROTH: %s(): 1\n", __func__);
 	struct snd_soc_codec *codec = dai->codec;
 	struct adau *adau = snd_soc_codec_get_drvdata(codec);
 	unsigned int div;
@@ -423,6 +437,7 @@ static int adau17x1_set_dai_pll(struct snd_soc_dai *dai, int pll_id,
 static int adau17x1_set_dai_sysclk(struct snd_soc_dai *dai,
 		int clk_id, unsigned int freq, int dir)
 {
+pr_debug("TROTH: %s(): 1\n", __func__);
 	struct adau *adau = snd_soc_codec_get_drvdata(dai->codec);
 	struct snd_soc_dapm_context *dapm = &dai->codec->dapm;
 
@@ -453,6 +468,7 @@ static int adau17x1_set_dai_sysclk(struct snd_soc_dai *dai,
 
 static int adau17x1_set_dai_clkdiv(struct snd_soc_dai *dai, int div_id, int div)
 {
+pr_debug("TROTH: %s(): 1\n", __func__);
 	struct adau *adau = snd_soc_codec_get_drvdata(dai->codec);
 
 	switch (div) {
@@ -474,6 +490,7 @@ static int adau17x1_set_dai_clkdiv(struct snd_soc_dai *dai, int div_id, int div)
 static int adau17x1_set_dai_fmt(struct snd_soc_dai *dai,
 		unsigned int fmt)
 {
+pr_debug("TROTH: %s(): 1\n", __func__);
 	struct adau *adau = snd_soc_codec_get_drvdata(dai->codec);
 	unsigned int ctrl0, ctrl1;
 	int lrclk_pol;
@@ -546,6 +563,7 @@ static int adau17x1_set_dai_fmt(struct snd_soc_dai *dai,
 static int adau17x1_set_dai_tdm_slot(struct snd_soc_dai *dai,
 	unsigned int tx_mask, unsigned int rx_mask, int slots, int slot_width)
 {
+pr_debug("TROTH: %s(): 1\n", __func__);
 	struct adau *adau = snd_soc_codec_get_drvdata(dai->codec);
 	unsigned int ser_ctrl0, ser_ctrl1;
 	unsigned int conv_ctrl0, conv_ctrl1;
@@ -681,6 +699,7 @@ EXPORT_SYMBOL_GPL(adau17x1_dai_ops);
 int adau17x1_set_micbias_voltage(struct snd_soc_codec *codec,
 	enum adau17x1_micbias_voltage micbias)
 {
+pr_debug("TROTH: %s(): 1\n", __func__);
 	struct adau *adau = snd_soc_codec_get_drvdata(codec);
 
 	switch (micbias) {
@@ -699,6 +718,7 @@ EXPORT_SYMBOL_GPL(adau17x1_set_micbias_voltage);
 
 bool adau17x1_readable_register(struct device *dev, unsigned int reg)
 {
+pr_debug("TROTH: %s(): 1\n", __func__);
 	switch (reg) {
 	case ADAU17X1_CLOCK_CONTROL:
 	case ADAU17X1_PLL_CONTROL:
@@ -734,6 +754,7 @@ EXPORT_SYMBOL_GPL(adau17x1_readable_register);
 
 bool adau17x1_volatile_register(struct device *dev, unsigned int reg)
 {
+pr_debug("TROTH: %s(): 1\n", __func__);
 	/* SigmaDSP parameter and program memory */
 	if (reg < 0x4000)
 		return true;
@@ -758,6 +779,7 @@ EXPORT_SYMBOL_GPL(adau17x1_volatile_register);
 int adau17x1_load_firmware(struct adau *adau, struct device *dev,
 	const char *firmware)
 {
+pr_debug("TROTH: %s(): 1\n", __func__);
 	int ret;
 	int dspsr;
 
@@ -775,12 +797,14 @@ int adau17x1_load_firmware(struct adau *adau, struct device *dev,
 	}
 	regmap_write(adau->regmap, ADAU17X1_DSP_SAMPLING_RATE, dspsr);
 
+pr_debug("TROTH: %s(): exit\n", __func__);
 	return 0;
 }
 EXPORT_SYMBOL_GPL(adau17x1_load_firmware);
 
 int adau17x1_probe(struct snd_soc_codec *codec)
 {
+pr_debug("TROTH: %s(): 1\n", __func__);
 	struct adau *adau = snd_soc_codec_get_drvdata(codec);
 	int ret;
 
@@ -810,6 +834,7 @@ EXPORT_SYMBOL_GPL(adau17x1_probe);
 
 int adau17x1_add_routes(struct snd_soc_codec *codec)
 {
+pr_debug("TROTH: %s(): 1\n", __func__);
 	struct adau *adau = snd_soc_codec_get_drvdata(codec);
 	int ret;
 
@@ -834,11 +859,13 @@ EXPORT_SYMBOL_GPL(adau17x1_add_routes);
 #if IS_ENABLED(CONFIG_SPI_MASTER)
 static void adau17x1_spi_mode(struct device *dev)
 {
+pr_debug("TROTH: %s():\n", __func__);
 	/* To get the device into SPI mode CLATCH has to be pulled low three
 	 * times. Do this by issuing three dummy reads. */
-	spi_w8r8(to_spi_device(dev), 0x00);
-	spi_w8r8(to_spi_device(dev), 0x00);
-	spi_w8r8(to_spi_device(dev), 0x00);
+// while(1)
+	spi_w8r8(to_spi_device(dev), 0x5a);
+	spi_w8r8(to_spi_device(dev), 0x5a);
+	spi_w8r8(to_spi_device(dev), 0x5a);
 }
 #else
 static inline void adau17x1_spi_mode(struct device *dev) {}
@@ -868,11 +895,13 @@ EXPORT_SYMBOL_GPL(adau17x1_resume);
 int adau17x1_bus_probe(struct device *dev, struct regmap *regmap,
 	enum adau17x1_type type, enum snd_soc_control_type control_type)
 {
+pr_debug("TROTH: %s(): 1\n", __func__);
 	struct adau *adau;
 
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
+pr_debug("TROTH: %s(): 2\n", __func__);
 	adau = devm_kzalloc(dev, sizeof(*adau), GFP_KERNEL);
 	if (!adau)
 		return -ENOMEM;
@@ -882,11 +911,17 @@ int adau17x1_bus_probe(struct device *dev, struct regmap *regmap,
 	adau->type = type;
 	adau->sysclk_div = 1;
 
+pr_debug("TROTH: %s(): 3\n", __func__);
 	dev_set_drvdata(dev, adau);
 
+pr_debug("TROTH: %s(): 4\n", __func__);
 	if (control_type == SND_SOC_SPI)
+{
+pr_debug("TROTH: %s(): 5\n", __func__);
 		adau17x1_spi_mode(dev);
+}
 
+pr_debug("TROTH: %s(): exit\n", __func__);
 	return 0;
 }
 EXPORT_SYMBOL_GPL(adau17x1_bus_probe);

@@ -16,6 +16,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#if 1
+#  define DEBUG
+#  define VERBOSE_DEBUG
+#endif
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -89,8 +93,13 @@
  * Macros for the SPI controller read/write
  */
 #define xspips_read(addr)	__raw_readl(addr)
-#define xspips_write(addr, val)	__raw_writel((val), (addr))
+#define xspips_write_no_pr(addr, val)	__raw_writel((val), (addr))
 
+#define xspips_write(addr, val)	do { \
+  const u8 data = (val); \
+  pr_debug("TROTH: %s(): line=%d: write: addr=%p, val=%08x\n", __func__, __LINE__, (addr), data); \
+  __raw_writel(data, (addr)); \
+} while (0)
 
 /**
  * struct xspips - This definition defines spi driver instance
@@ -173,7 +182,7 @@ static void xspips_chipselect(struct spi_device *spi, int is_on)
 	spin_lock_irqsave(&xspi->ctrl_reg_lock, flags);
 
 	ctrl_reg = xspips_read(xspi->regs + XSPIPS_CR_OFFSET);
-
+pr_debug("TROTH: %s(): line=%d: read: REG=Config[CR], val=%08x\n", __func__, __LINE__, ctrl_reg);
 	if (is_on) {
 		/* Select the slave */
 		ctrl_reg &= ~XSPIPS_CR_SSCTRL_MASK;
@@ -231,6 +240,7 @@ static int xspips_setup_transfer(struct spi_device *spi,
 
 	xspips_write(xspi->regs + XSPIPS_ER_OFFSET, ~XSPIPS_ER_ENABLE_MASK);
 	ctrl_reg = xspips_read(xspi->regs + XSPIPS_CR_OFFSET);
+pr_debug("TROTH: %s(): line=%d: read: REG=Config[CR], val=%08x\n", __func__, __LINE__, ctrl_reg);
 
 	/* Set the SPI clock phase and clock polarity */
 	ctrl_reg &= (~XSPIPS_CR_CPHA_MASK) & (~XSPIPS_CR_CPOL_MASK);
@@ -248,6 +258,7 @@ static int xspips_setup_transfer(struct spi_device *spi,
 
 		ctrl_reg &= 0xFFFFFFC7;
 		ctrl_reg |= (baud_rate_val << 3);
+pr_debug("TROTH: %s(): line=%d: baud_rate_val=%08x, req_hz=%08x\n", __func__, __LINE__, baud_rate_val, req_hz);
 
 		xspi->speed_hz =
 			(clk_get_rate(xspi->devclk) / (2 << baud_rate_val));
@@ -293,11 +304,16 @@ static void xspips_fill_tx_fifo(struct xspips *xspi)
 {
 	while ((xspips_read(xspi->regs + XSPIPS_ISR_OFFSET) & 0x00000008) == 0
 		&& (xspi->remaining_bytes > 0)) {
+#if 1
 		if (xspi->txbuf)
 			xspips_write(xspi->regs + XSPIPS_TXD_OFFSET,
 					*xspi->txbuf++);
 		else
 			xspips_write(xspi->regs + XSPIPS_TXD_OFFSET, 0);
+#else
+		const u8 data = (xspi->txbuf) ? *xspi->txbuf++ : 0;
+		xspips_write(xspi->regs + XSPIPS_TXD_OFFSET, data);
+#endif
 
 		xspi->remaining_bytes--;
 	}
@@ -394,6 +410,7 @@ static int xspips_start_transfer(struct spi_device *spi,
 	u32 ctrl_reg;
 	unsigned long flags;
 
+pr_debug("TROTH: %s(): line=%d: transfer: tx_buf=%p, rx_buf=%p, len=%d\n", __func__, __LINE__, transfer->tx_buf, transfer->rx_buf, transfer->len);
 	xspi->txbuf = transfer->tx_buf;
 	xspi->rxbuf = transfer->rx_buf;
 	xspi->remaining_bytes = transfer->len;
@@ -407,6 +424,7 @@ static int xspips_start_transfer(struct spi_device *spi,
 
 	/* Start the transfer by enabling manual start bit */
 	ctrl_reg = xspips_read(xspi->regs + XSPIPS_CR_OFFSET);
+pr_debug("TROTH: %s(): line=%d: read: REG=Config[CR], val=%08x\n", __func__, __LINE__, ctrl_reg);
 	ctrl_reg |= XSPIPS_CR_MANSTRT_MASK;
 	xspips_write(xspi->regs + XSPIPS_CR_OFFSET, ctrl_reg);
 
