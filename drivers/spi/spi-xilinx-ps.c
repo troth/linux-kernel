@@ -242,7 +242,7 @@ static int xspips_setup_transfer(struct spi_device *spi,
 	/* Set the clock frequency */
 	if (xspi->speed_hz != req_hz) {
 		baud_rate_val = 0;
-		while ((baud_rate_val < 8) && (clk_get_rate(xspi->devclk) /
+		while ((baud_rate_val < 7) && (clk_get_rate(xspi->devclk) /
 					(2 << baud_rate_val)) > req_hz)
 			baud_rate_val++;
 
