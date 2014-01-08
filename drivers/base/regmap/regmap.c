@@ -575,7 +575,6 @@ pr_debug("TROTH: %s: val_bits=%d\n", __func__, config->val_bits);
 		break;
 	}
 
-pr_debug("TROTH: %s(): 1\n", __func__);
 	if (map->format.format_write) {
 		if ((reg_endian != REGMAP_ENDIAN_BIG) ||
 		    (val_endian != REGMAP_ENDIAN_BIG))
@@ -583,19 +582,16 @@ pr_debug("TROTH: %s(): 1\n", __func__);
 		map->use_single_rw = true;
 	}
 
-pr_debug("TROTH: %s(): 2\n", __func__);
 	if (!map->format.format_write &&
 	    !(map->format.format_reg && map->format.format_val))
 		goto err_map;
 
-pr_debug("TROTH: %s(): 3\n", __func__);
 	map->work_buf = kzalloc(map->format.buf_size, GFP_KERNEL);
 	if (map->work_buf == NULL) {
 		ret = -ENOMEM;
 		goto err_map;
 	}
 
-pr_debug("TROTH: %s(): 4\n", __func__);
 	map->range_tree = RB_ROOT;
 	for (i = 0; i < config->num_ranges; i++) {
 		const struct regmap_range_cfg *range_cfg = &config->ranges[i];
@@ -683,15 +679,12 @@ pr_debug("TROTH: %s(): 4\n", __func__);
 		}
 	}
 
-pr_debug("TROTH: %s(): 5\n", __func__);
 	regmap_debugfs_init(map, config->name);
 
-pr_debug("TROTH: %s(): 6\n", __func__);
 	ret = regcache_init(map, config);
 	if (ret != 0)
 		goto err_range;
 
-pr_debug("TROTH: %s(): 7\n", __func__);
 	/* Add a devres resource for dev_get_regmap() */
 	m = devres_alloc(dev_get_regmap_release, sizeof(*m), GFP_KERNEL);
 	if (!m) {
@@ -701,7 +694,6 @@ pr_debug("TROTH: %s(): 7\n", __func__);
 	*m = map;
 	devres_add(dev, m);
 
-pr_debug("TROTH: %s(): exit\n", __func__);
 	return map;
 
 err_debugfs:
@@ -1198,6 +1190,7 @@ static int _regmap_raw_read(struct regmap *map, unsigned int reg, void *val,
 	u8 *u8 = map->work_buf;
 	int ret;
 
+pr_debug("TROTH: %s(): 1:\n", __func__);
 	range = _regmap_range_lookup(map, reg);
 	if (range) {
 		ret = _regmap_select_page(map, &reg, range,
@@ -1234,15 +1227,18 @@ static int _regmap_read(struct regmap *map, unsigned int reg,
 {
 	int ret;
 
+pr_debug("TROTH: %s(): 1: pre cache\n", __func__);
 	if (!map->cache_bypass) {
 		ret = regcache_read(map, reg, val);
 		if (ret == 0)
 			return 0;
 	}
 
+pr_debug("TROTH: %s(): 2: post cache\n", __func__);
 	if (!map->format.parse_val)
 		return -EINVAL;
 
+pr_debug("TROTH: %s(): 2: pre cache-only\n", __func__);
 	if (map->cache_only)
 		return -EBUSY;
 

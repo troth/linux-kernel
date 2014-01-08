@@ -16,7 +16,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#if 1
+#if 0
 #  define DEBUG
 #  define VERBOSE_DEBUG
 #endif

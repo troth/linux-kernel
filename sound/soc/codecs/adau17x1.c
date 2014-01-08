@@ -718,7 +718,6 @@ EXPORT_SYMBOL_GPL(adau17x1_set_micbias_voltage);
 
 bool adau17x1_readable_register(struct device *dev, unsigned int reg)
 {
-pr_debug("TROTH: %s(): 1\n", __func__);
 	switch (reg) {
 	case ADAU17X1_CLOCK_CONTROL:
 	case ADAU17X1_PLL_CONTROL:
@@ -754,7 +753,6 @@ EXPORT_SYMBOL_GPL(adau17x1_readable_register);
 
 bool adau17x1_volatile_register(struct device *dev, unsigned int reg)
 {
-pr_debug("TROTH: %s(): 1\n", __func__);
 	/* SigmaDSP parameter and program memory */
 	if (reg < 0x4000)
 		return true;
@@ -792,6 +790,7 @@ pr_debug("TROTH: %s(): 1\n", __func__);
 
 	ret = process_sigma_firmware_regmap(dev, adau->regmap, firmware);
 	if (ret) {
+pr_debug("TROTH: %s(): disable DSP\n", __func__);
 		regmap_write(adau->regmap, ADAU17X1_DSP_ENABLE, 0);
 		return ret;
 	}

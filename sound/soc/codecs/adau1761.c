@@ -668,7 +668,6 @@ pr_debug("TROTH: %s(): 1\n", __func__);
 
 static bool adau1761_readable_register(struct device *dev, unsigned int reg)
 {
-pr_debug("TROTH: %s(): 1\n", __func__);
 	switch (reg) {
 	case ADAU1761_DIGMIC_JACKDETECT:
 	case ADAU1761_REC_MIXER_LEFT0:
