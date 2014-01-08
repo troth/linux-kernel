@@ -867,10 +867,7 @@ pr_debug("TROTH: %s(): 10\n", __func__);
 
 static const struct regmap_config adau1761_spi_regmap_config = {
 	.val_bits		= 8,
-	//.reg_bits		= 8,
-	.reg_bits		= 16,
-	//.reg_bits		= 24,
-	//.reg_bits		= 32,
+	.reg_bits		= 24,
 	.read_flag_mask		= 0x01,
 	.max_register		= 0x40fa,
 	.reg_defaults		= adau1761_reg_defaults,
