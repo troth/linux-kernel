@@ -788,12 +788,14 @@ pr_debug("TROTH: %s(): 1\n", __func__);
 	regmap_write(adau->regmap, ADAU17X1_DSP_ENABLE, 1);
 	regmap_write(adau->regmap, ADAU17X1_DSP_SAMPLING_RATE, 0xf);
 
+#if 0
 	ret = process_sigma_firmware_regmap(dev, adau->regmap, firmware);
 	if (ret) {
 pr_debug("TROTH: %s(): disable DSP\n", __func__);
 		regmap_write(adau->regmap, ADAU17X1_DSP_ENABLE, 0);
 		return ret;
 	}
+#endif
 	regmap_write(adau->regmap, ADAU17X1_DSP_SAMPLING_RATE, dspsr);
 
 pr_debug("TROTH: %s(): exit\n", __func__);
