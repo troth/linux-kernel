@@ -251,7 +251,7 @@ pr_debug("TROTH: %s(): line=%d: read: REG=Config[CR], val=%08x\n", __func__, __L
 
 	/* Set the clock frequency */
 	if (xspi->speed_hz != req_hz) {
-		baud_rate_val = 0;
+		baud_rate_val = 1;
 		while ((baud_rate_val < 7) && (clk_get_rate(xspi->devclk) /
 					(2 << baud_rate_val)) > req_hz)
 			baud_rate_val++;
@@ -467,7 +467,7 @@ static void xspips_work_queue(struct work_struct *work)
 		spi = msg->spi;
 
 		list_for_each_entry(transfer, &msg->transfers, transfer_list) {
-			if (transfer->bits_per_word || transfer->speed_hz) {
+			if ((transfer->bits_per_word || transfer->speed_hz) && cs_change) {
 				status = xspips_setup_transfer(spi, transfer);
 				if (status < 0)
 					break;
