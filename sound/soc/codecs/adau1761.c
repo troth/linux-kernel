@@ -842,11 +842,10 @@ static int adau1761_bus_probe(struct device *dev,
 	struct snd_soc_dai_driver *dai_drv;
 	int ret;
 
-pr_debug("TROTH: %s(): 1\n", __func__);
+pr_debug("TROTH: %s():\n", __func__);
 	ret = adau17x1_bus_probe(dev, regmap, type, control_type);
 	if (ret)
     {
-pr_debug("TROTH: %s(): 2\n", __func__);
 		return ret;
     }
 
@@ -854,11 +853,11 @@ pr_debug("TROTH: %s(): 2\n", __func__);
 		dai_drv = &adau1361_dai_driver;
 	else
     {
-pr_debug("TROTH: %s(): 3: 1761 dai driver\n", __func__);
+pr_debug("TROTH: %s(): 1761 dai driver\n", __func__);
 		dai_drv = &adau1761_dai_driver;
     }
 
-pr_debug("TROTH: %s(): 10\n", __func__);
+pr_debug("TROTH: %s(): registering codec\n", __func__);
 	return snd_soc_register_codec(dev, &adau1761_codec_driver, dai_drv, 1);
 }
 

@@ -213,6 +213,7 @@ static ssize_t codec_reg_read_file(struct file *file, char __user *user_buf,
 	struct snd_soc_codec *codec = file->private_data;
 	char *buf;
 
+pr_debug("TROTH: %s()\n", __func__);
 	if (*ppos < 0 || !count)
 		return -EINVAL;
 
@@ -242,6 +243,7 @@ static ssize_t codec_reg_write_file(struct file *file,
 	unsigned long reg, value;
 	struct snd_soc_codec *codec = file->private_data;
 
+pr_debug("TROTH: %s()\n", __func__);
 	buf_size = min(count, (sizeof(buf)-1));
 	if (copy_from_user(buf, user_buf, buf_size))
 		return -EFAULT;
@@ -2017,7 +2019,7 @@ int snd_soc_platform_read(struct snd_soc_platform *platform,
 	}
 
 	ret = platform->driver->read(platform, reg);
-	dev_dbg(platform->dev, "read %x => %x\n", reg, ret);
+	dev_dbg(platform->dev, "--%s()-- read %x => %x\n", __func__, reg, ret);
 	trace_snd_soc_preg_read(platform, reg, ret);
 
 	return ret;
@@ -2104,7 +2106,7 @@ unsigned int snd_soc_read(struct snd_soc_codec *codec, unsigned int reg)
 	unsigned int ret;
 
 	ret = codec->read(codec, reg);
-	dev_dbg(codec->dev, "read %x => %x\n", reg, ret);
+	dev_dbg(codec->dev, "--%s()-- read %x => %x\n", __func__, reg, ret);
 	trace_snd_soc_reg_read(codec, reg, ret);
 
 	return ret;
@@ -3567,6 +3569,7 @@ int snd_soc_register_card(struct snd_soc_card *card)
 {
 	int i, ret;
 
+pr_debug("TROTH: %s(): 1\n", __func__);
 	if (!card->name || !card->dev)
 		return -EINVAL;
 
@@ -3621,6 +3624,7 @@ int snd_soc_register_card(struct snd_soc_card *card)
 		}
 	}
 
+pr_debug("TROTH: %s(): 2\n", __func__);
 	dev_set_drvdata(card->dev, card);
 
 	snd_soc_initialize_card_lists(card);
@@ -3645,10 +3649,12 @@ int snd_soc_register_card(struct snd_soc_card *card)
 	mutex_init(&card->mutex);
 	mutex_init(&card->dapm_mutex);
 
+pr_debug("TROTH: %s(): 3\n", __func__);
 	ret = snd_soc_instantiate_card(card);
 	if (ret != 0)
 		soc_cleanup_card_debugfs(card);
 
+pr_debug("TROTH: %s(): exit(%d)\n", __func__, ret);
 	return ret;
 }
 EXPORT_SYMBOL_GPL(snd_soc_register_card);

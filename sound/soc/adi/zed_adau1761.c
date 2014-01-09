@@ -135,7 +135,6 @@ pr_debug("TROTH: %s():\n", __func__);
 		!zed_adau1761_dai_link.cpu_of_node)
 		return -ENXIO;
 
-pr_debug("TROTH: %s(): registering card\n", __func__);
 	return snd_soc_register_card(card);
 }
 

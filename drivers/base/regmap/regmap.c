@@ -10,7 +10,7 @@
  * published by the Free Software Foundation.
  */
 
-#if 1
+#if 0
 #  define DEBUG
 #  define VERBOSE_DEBUG
 #endif
@@ -1190,7 +1190,6 @@ static int _regmap_raw_read(struct regmap *map, unsigned int reg, void *val,
 	u8 *u8 = map->work_buf;
 	int ret;
 
-pr_debug("TROTH: %s(): 1:\n", __func__);
 	range = _regmap_range_lookup(map, reg);
 	if (range) {
 		ret = _regmap_select_page(map, &reg, range,
@@ -1227,18 +1226,15 @@ static int _regmap_read(struct regmap *map, unsigned int reg,
 {
 	int ret;
 
-pr_debug("TROTH: %s(): 1: pre cache\n", __func__);
 	if (!map->cache_bypass) {
 		ret = regcache_read(map, reg, val);
 		if (ret == 0)
 			return 0;
 	}
 
-pr_debug("TROTH: %s(): 2: post cache\n", __func__);
 	if (!map->format.parse_val)
 		return -EINVAL;
 
-pr_debug("TROTH: %s(): 2: pre cache-only\n", __func__);
 	if (map->cache_only)
 		return -EBUSY;
 

@@ -95,11 +95,15 @@
 #define xspips_read(addr)	__raw_readl(addr)
 #define xspips_write_no_pr(addr, val)	__raw_writel((val), (addr))
 
+#if 0
 #define xspips_write(addr, val)	do { \
   const u8 data = (val); \
   pr_debug("TROTH: %s(): line=%d: write: addr=%p, val=%08x\n", __func__, __LINE__, (addr), data); \
   __raw_writel(data, (addr)); \
 } while (0)
+#else
+#define xspips_write(addr, val)	__raw_writel((val), (addr))
+#endif
 
 /**
  * struct xspips - This definition defines spi driver instance
@@ -410,7 +414,7 @@ static int xspips_start_transfer(struct spi_device *spi,
 	u32 ctrl_reg;
 	unsigned long flags;
 
-pr_debug("TROTH: %s(): line=%d: transfer: tx_buf=%p, rx_buf=%p, len=%d\n", __func__, __LINE__, transfer->tx_buf, transfer->rx_buf, transfer->len);
+pr_debug("TROTH: %s(): line=%d: transfer: tx_buf=%p, rx_buf=%p, len=%d\n", __func__, __LINE__, transfer->tx_buf, transfer->rx_buf, transfer->len, transfer->cs_change);
 	xspi->txbuf = transfer->tx_buf;
 	xspi->rxbuf = transfer->rx_buf;
 	xspi->remaining_bytes = transfer->len;
@@ -424,7 +428,7 @@ pr_debug("TROTH: %s(): line=%d: transfer: tx_buf=%p, rx_buf=%p, len=%d\n", __fun
 
 	/* Start the transfer by enabling manual start bit */
 	ctrl_reg = xspips_read(xspi->regs + XSPIPS_CR_OFFSET);
-pr_debug("TROTH: %s(): line=%d: read: REG=Config[CR], val=%08x\n", __func__, __LINE__, ctrl_reg);
+//pr_debug("TROTH: %s(): line=%d: read: REG=Config[CR], val=%08x\n", __func__, __LINE__, ctrl_reg);
 	ctrl_reg |= XSPIPS_CR_MANSTRT_MASK;
 	xspips_write(xspi->regs + XSPIPS_CR_OFFSET, ctrl_reg);
 
@@ -476,6 +480,7 @@ static void xspips_work_queue(struct work_struct *work)
 			if (cs_change)
 				xspips_chipselect(spi, 1);
 
+pr_debug("TROTH: %s(): cs_change=%d; xfer->cs_change=%d\n", __func__, cs_change, transfer->cs_change);
 			cs_change = transfer->cs_change;
 
 			if (!transfer->tx_buf && !transfer->rx_buf &&

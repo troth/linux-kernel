@@ -777,7 +777,6 @@ EXPORT_SYMBOL_GPL(adau17x1_volatile_register);
 int adau17x1_load_firmware(struct adau *adau, struct device *dev,
 	const char *firmware)
 {
-pr_debug("TROTH: %s(): 1\n", __func__);
 	int ret;
 	int dspsr;
 
@@ -788,17 +787,13 @@ pr_debug("TROTH: %s(): 1\n", __func__);
 	regmap_write(adau->regmap, ADAU17X1_DSP_ENABLE, 1);
 	regmap_write(adau->regmap, ADAU17X1_DSP_SAMPLING_RATE, 0xf);
 
-#if 0
 	ret = process_sigma_firmware_regmap(dev, adau->regmap, firmware);
 	if (ret) {
-pr_debug("TROTH: %s(): disable DSP\n", __func__);
 		regmap_write(adau->regmap, ADAU17X1_DSP_ENABLE, 0);
 		return ret;
 	}
-#endif
 	regmap_write(adau->regmap, ADAU17X1_DSP_SAMPLING_RATE, dspsr);
 
-pr_debug("TROTH: %s(): exit\n", __func__);
 	return 0;
 }
 EXPORT_SYMBOL_GPL(adau17x1_load_firmware);
@@ -863,10 +858,9 @@ static void adau17x1_spi_mode(struct device *dev)
 pr_debug("TROTH: %s():\n", __func__);
 	/* To get the device into SPI mode CLATCH has to be pulled low three
 	 * times. Do this by issuing three dummy reads. */
-// while(1)
-	spi_w8r8(to_spi_device(dev), 0x5a);
-	spi_w8r8(to_spi_device(dev), 0x5a);
-	spi_w8r8(to_spi_device(dev), 0x5a);
+	spi_w8r8(to_spi_device(dev), 0x00);
+	spi_w8r8(to_spi_device(dev), 0x00);
+	spi_w8r8(to_spi_device(dev), 0x00);
 }
 #else
 static inline void adau17x1_spi_mode(struct device *dev) {}
@@ -902,7 +896,6 @@ pr_debug("TROTH: %s(): 1\n", __func__);
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-pr_debug("TROTH: %s(): 2\n", __func__);
 	adau = devm_kzalloc(dev, sizeof(*adau), GFP_KERNEL);
 	if (!adau)
 		return -ENOMEM;
@@ -912,15 +905,10 @@ pr_debug("TROTH: %s(): 2\n", __func__);
 	adau->type = type;
 	adau->sysclk_div = 1;
 
-pr_debug("TROTH: %s(): 3\n", __func__);
 	dev_set_drvdata(dev, adau);
 
-pr_debug("TROTH: %s(): 4\n", __func__);
 	if (control_type == SND_SOC_SPI)
-{
-pr_debug("TROTH: %s(): 5\n", __func__);
 		adau17x1_spi_mode(dev);
-}
 
 pr_debug("TROTH: %s(): exit\n", __func__);
 	return 0;
