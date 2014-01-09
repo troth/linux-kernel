@@ -873,7 +873,7 @@ static const struct regmap_config adau1761_spi_regmap_config = {
 	.num_reg_defaults	= ARRAY_SIZE(adau1761_reg_defaults),
 	.readable_reg		= adau1761_readable_register,
 	.volatile_reg		= adau17x1_volatile_register,
-	.cache_type		= REGCACHE_RBTREE,
+	.cache_type		= REGCACHE_NONE,
 };
 
 static int adau1761_spi_probe(struct spi_device *spi)
