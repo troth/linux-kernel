@@ -23,14 +23,14 @@
 #include <sound/soc.h>
 #include "../codecs/adau17x1.h"
 
-static const struct snd_soc_dapm_widget zed_adau1761_widgets[] = {
+static const struct snd_soc_dapm_widget whiddy_adau1361_widgets[] = {
 	SND_SOC_DAPM_SPK("Line Out", NULL),
 	SND_SOC_DAPM_HP("Headphone Out", NULL),
 	SND_SOC_DAPM_MIC("Mic In", NULL),
 	SND_SOC_DAPM_MIC("Line In", NULL),
 };
 
-static const struct snd_soc_dapm_route zed_adau1761_routes[] = {
+static const struct snd_soc_dapm_route whiddy_adau1361_routes[] = {
 	{ "Line Out", NULL, "LOUT" },
 	{ "Line Out", NULL, "ROUT" },
 	{ "Headphone Out", NULL, "LHP" },
@@ -42,7 +42,7 @@ static const struct snd_soc_dapm_route zed_adau1761_routes[] = {
 	{ "RAUX", NULL, "Line In" },
 };
 
-static int zed_adau1761_hw_params(struct snd_pcm_substream *substream,
+static int whiddy_adau1361_hw_params(struct snd_pcm_substream *substream,
 	struct snd_pcm_hw_params *params)
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
@@ -84,35 +84,35 @@ static int zed_adau1761_hw_params(struct snd_pcm_substream *substream,
 	return ret;
 }
 
-static struct snd_soc_ops zed_adau1761_ops = {
-	.hw_params = zed_adau1761_hw_params,
+static struct snd_soc_ops whiddy_adau1361_ops = {
+	.hw_params = whiddy_adau1361_hw_params,
 };
 
-static struct snd_soc_dai_link zed_adau1761_dai_link = {
-	.name = "adau1761",
-	.stream_name = "adau1761",
+static struct snd_soc_dai_link whiddy_adau1361_dai_link = {
+	.name = "adau1361",
+	.stream_name = "adau1361",
 	.codec_dai_name = "adau-hifi",
 	.dai_fmt = SND_SOC_DAIFMT_I2S |
 			SND_SOC_DAIFMT_NB_NF |
 			SND_SOC_DAIFMT_CBS_CFS,
-	.ops = &zed_adau1761_ops,
+	.ops = &whiddy_adau1361_ops,
 };
 
-static struct snd_soc_card zed_adau1761_card = {
-	.name = "ZED ADAU1761",
+static struct snd_soc_card whiddy_adau1361_card = {
+	.name = "WHIDDY ADAU1361",
 	.owner = THIS_MODULE,
-	.dai_link = &zed_adau1761_dai_link,
+	.dai_link = &whiddy_adau1361_dai_link,
 	.num_links = 1,
-	.dapm_widgets = zed_adau1761_widgets,
-	.num_dapm_widgets = ARRAY_SIZE(zed_adau1761_widgets),
-	.dapm_routes = zed_adau1761_routes,
-	.num_dapm_routes = ARRAY_SIZE(zed_adau1761_routes),
+	.dapm_widgets = whiddy_adau1361_widgets,
+	.num_dapm_widgets = ARRAY_SIZE(whiddy_adau1361_widgets),
+	.dapm_routes = whiddy_adau1361_routes,
+	.num_dapm_routes = ARRAY_SIZE(whiddy_adau1361_routes),
 	.fully_routed = true,
 };
 
-static int zed_adau1761_probe(struct platform_device *pdev)
+static int whiddy_adau1361_probe(struct platform_device *pdev)
 {
-	struct snd_soc_card *card = &zed_adau1761_card;
+	struct snd_soc_card *card = &whiddy_adau1361_card;
 	struct device_node *of_node = pdev->dev.of_node;
 
 	if (!of_node)
@@ -120,18 +120,18 @@ static int zed_adau1761_probe(struct platform_device *pdev)
 
 	card->dev = &pdev->dev;
 
-	zed_adau1761_dai_link.codec_of_node = of_parse_phandle(of_node, "audio-codec", 0);
-	zed_adau1761_dai_link.cpu_of_node = of_parse_phandle(of_node, "cpu-dai", 0);
-	zed_adau1761_dai_link.platform_of_node = zed_adau1761_dai_link.cpu_of_node;
+	whiddy_adau1361_dai_link.codec_of_node = of_parse_phandle(of_node, "audio-codec", 0);
+	whiddy_adau1361_dai_link.cpu_of_node = of_parse_phandle(of_node, "cpu-dai", 0);
+	whiddy_adau1361_dai_link.platform_of_node = whiddy_adau1361_dai_link.cpu_of_node;
 
-	if (!zed_adau1761_dai_link.codec_of_node ||
-		!zed_adau1761_dai_link.cpu_of_node)
+	if (!whiddy_adau1361_dai_link.codec_of_node ||
+		!whiddy_adau1361_dai_link.cpu_of_node)
 		return -ENXIO;
 
 	return snd_soc_register_card(card);
 }
 
-static int zed_adau1761_remove(struct platform_device *pdev)
+static int whiddy_adau1361_remove(struct platform_device *pdev)
 {
 	struct snd_soc_card *card = platform_get_drvdata(pdev);
 
@@ -140,25 +140,25 @@ static int zed_adau1761_remove(struct platform_device *pdev)
 	return 0;
 }
 
-static const struct of_device_id zed_adau1761_of_match[] = {
-	{ .compatible = "digilent,zed-sound", },
+static const struct of_device_id whiddy_adau1361_of_match[] = {
+	{ .compatible = "covidien,whiddy-sound", },
 	{},
 };
-MODULE_DEVICE_TABLE(of, zed_adau1761_of_match);
+MODULE_DEVICE_TABLE(of, whiddy_adau1361_of_match);
 
-static struct platform_driver zed_adau1761_card_driver = {
+static struct platform_driver whiddy_adau1361_card_driver = {
 	.driver = {
-		.name = "zed-adau1761-snd",
+		.name = "whiddy-adau1361-snd",
 		.owner = THIS_MODULE,
-		.of_match_table = zed_adau1761_of_match,
+		.of_match_table = whiddy_adau1361_of_match,
 		.pm = &snd_soc_pm_ops,
 	},
-	.probe = zed_adau1761_probe,
-	.remove = zed_adau1761_remove,
+	.probe = whiddy_adau1361_probe,
+	.remove = whiddy_adau1361_remove,
 };
-module_platform_driver(zed_adau1761_card_driver);
+module_platform_driver(whiddy_adau1361_card_driver);
 
-MODULE_DESCRIPTION("ASoC ZED board ADAU1761 driver");
+MODULE_DESCRIPTION("ASoC Whiddy board ADAU1361 driver");
 MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
 MODULE_LICENSE("GPL");
-MODULE_ALIAS("platform:zed-adau1761-snd");
+MODULE_ALIAS("platform:whiddy-adau1361-snd");
