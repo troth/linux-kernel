@@ -24,22 +24,32 @@
 #include "../codecs/adau17x1.h"
 
 static const struct snd_soc_dapm_widget whiddy_adau1361_widgets[] = {
+	SND_SOC_DAPM_OUTPUT("Mono Out"),
+#if 1
 	SND_SOC_DAPM_SPK("Line Out", NULL),
 	SND_SOC_DAPM_HP("Headphone Out", NULL),
+#endif
+#if 0
 	SND_SOC_DAPM_MIC("Mic In", NULL),
 	SND_SOC_DAPM_MIC("Line In", NULL),
+#endif
 };
 
 static const struct snd_soc_dapm_route whiddy_adau1361_routes[] = {
+#if 1
 	{ "Line Out", NULL, "LOUT" },
 	{ "Line Out", NULL, "ROUT" },
 	{ "Headphone Out", NULL, "LHP" },
 	{ "Headphone Out", NULL, "RHP" },
+#endif
+    { "Mono Out", NULL, "MONOOUT" },
+#if 0
 	{ "Mic In", NULL, "MICBIAS" },
 	{ "LINN", NULL, "Mic In" },
 	{ "RINN", NULL, "Mic In" },
 	{ "LAUX", NULL, "Line In" },
 	{ "RAUX", NULL, "Line In" },
+#endif
 };
 
 static int whiddy_adau1361_hw_params(struct snd_pcm_substream *substream,

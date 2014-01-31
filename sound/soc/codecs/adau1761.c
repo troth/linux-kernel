@@ -6,6 +6,10 @@
  *
  * Licensed under the GPL-2 or later.
  */
+#if 1
+#  define DEBUG
+#  define VERBOSE_DEBUG
+#endif
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -63,17 +67,17 @@ static const struct reg_default adau1761_reg_defaults[] = {
 	{ ADAU1761_LEFT_DIFF_INPUT_VOL,		0x00 },
 	{ ADAU1761_RIGHT_DIFF_INPUT_VOL,	0x00 },
 	{ ADAU1761_PLAY_LR_MIXER_LEFT,		0x00 },
-	{ ADAU1761_PLAY_MIXER_LEFT0,		0x00 },
-	{ ADAU1761_PLAY_MIXER_LEFT1,		0x00 },
-	{ ADAU1761_PLAY_MIXER_RIGHT0,		0x00 },
-	{ ADAU1761_PLAY_MIXER_RIGHT1,		0x00 },
+	{ ADAU1761_PLAY_MIXER_LEFT0,		0x65 },
+	{ ADAU1761_PLAY_MIXER_LEFT1,		0x44 },
+	{ ADAU1761_PLAY_MIXER_RIGHT0,		0x65 },
+	{ ADAU1761_PLAY_MIXER_RIGHT1,		0x44 },
 	{ ADAU1761_PLAY_LR_MIXER_RIGHT,		0x00 },
-	{ ADAU1761_PLAY_MIXER_MONO,		0x00 },
-	{ ADAU1761_PLAY_HP_LEFT_VOL,		0x00 },
-	{ ADAU1761_PLAY_HP_RIGHT_VOL,		0x00 },
+	{ ADAU1761_PLAY_MIXER_MONO,		0x03 },
+	{ ADAU1761_PLAY_HP_LEFT_VOL,		0x43 },
+	{ ADAU1761_PLAY_HP_RIGHT_VOL,		0x43 },
 	{ ADAU1761_PLAY_LINE_LEFT_VOL,		0x00 },
 	{ ADAU1761_PLAY_LINE_RIGHT_VOL,		0x00 },
-	{ ADAU1761_PLAY_MONO_OUTPUT_VOL,	0x00 },
+	{ ADAU1761_PLAY_MONO_OUTPUT_VOL,	0x42 },
 	{ ADAU1761_POP_CLICK_SUPPRESS,		0x00 },
 	{ ADAU1761_JACK_DETECT_PIN,		0x00 },
 	{ ADAU1761_CLK_ENABLE0,			0x00 },
@@ -90,7 +94,7 @@ static const struct reg_default adau1761_reg_defaults[] = {
 	{ ADAU17X1_RIGHT_INPUT_DIGITAL_VOL,	0x00 },
 	{ ADAU17X1_ADC_CONTROL,			0x00 },
 	{ ADAU17X1_PLAY_POWER_MGMT,		0x00 },
-	{ ADAU17X1_DAC_CONTROL0,		0x00 },
+	{ ADAU17X1_DAC_CONTROL0,		0xC3 },
 	{ ADAU17X1_DAC_CONTROL1,		0x00 },
 	{ ADAU17X1_DAC_CONTROL2,		0x00 },
 	{ ADAU17X1_SERIAL_PORT_PAD,		0x00 },
@@ -614,6 +618,7 @@ static int adau1761_setup_headphone_mode(struct snd_soc_codec *codec)
 	struct adau1761_platform_data *pdata = codec->dev->platform_data;
 	enum adau1761_output_mode mode;
 	int ret;
+        pr_debug("TROTH: %s()\n", __func__);
 
 	if (pdata)
 		mode = pdata->headphone_mode;
@@ -649,6 +654,7 @@ static int adau1761_setup_headphone_mode(struct snd_soc_codec *codec)
 			ARRAY_SIZE(adau1761_mono_dapm_widgets));
 		if (ret)
 			return ret;
+                pr_debug("TROTH: %s(): add adau1761 mono dapm routes\n", __func__);
 		ret = snd_soc_dapm_add_routes(&codec->dapm,
 			adau1761_mono_dapm_routes,
 			ARRAY_SIZE(adau1761_mono_dapm_routes));
@@ -837,9 +843,15 @@ static int adau1761_bus_probe(struct device *dev,
 		return ret;
 
 	if (type == ADAU1361)
+	{
+		pr_debug("TROTH: %s(): dai_drv = &adau1361_dai_driver\n", __func__);
 		dai_drv = &adau1361_dai_driver;
+	}
 	else
+	{
+		pr_debug("TROTH: %s(): dai_drv = &adau1361_dai_driver\n", __func__);
 		dai_drv = &adau1761_dai_driver;
+	}
 
 	return snd_soc_register_codec(dev, &adau1761_codec_driver, dai_drv, 1);
 }
@@ -855,7 +867,11 @@ static const struct regmap_config adau1761_spi_regmap_config = {
 	.num_reg_defaults	= ARRAY_SIZE(adau1761_reg_defaults),
 	.readable_reg		= adau1761_readable_register,
 	.volatile_reg		= adau17x1_volatile_register,
+#if 1
 	.cache_type		= REGCACHE_RBTREE,
+#else
+	.cache_type		= REGCACHE_NONE,
+#endif
 };
 
 static int adau1761_spi_probe(struct spi_device *spi)
