@@ -649,6 +649,10 @@ static int adau1761_setup_headphone_mode(struct snd_soc_codec *codec)
 			adau1761_capless_dapm_routes,
 			ARRAY_SIZE(adau1761_capless_dapm_routes));
 	} else {
+		ret = snd_soc_add_codec_controls(codec, adau1761_mono_controls,
+			ARRAY_SIZE(adau1761_mono_controls));
+		if (ret)
+			return ret;
 		ret = snd_soc_dapm_new_controls(&codec->dapm,
 			adau1761_mono_dapm_widgets,
 			ARRAY_SIZE(adau1761_mono_dapm_widgets));
